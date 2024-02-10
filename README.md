@@ -15,10 +15,10 @@ Unsafe? You have come to the right place.
 
 ## Prerequisites
 
-Can I speek freely? You need a brain to use this class. IT-Security is a big and complex issue. Using this class has no value if your server allows 1K GET-params or standard queries (URLs) of 8K like this:
+Can I speek freely? You need a brain to use this class. IT-Security is a big and complex issue. Using this class has no value if your server allows 1000 GET-params or standard queries (URLs) of 8K like this:
 
 ```
-php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16
+your-domain.net/index.php?param=php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7|convert.iconv.SE2.UTF-16
 ```
 Source: https://github.com/php/php-src/issues/10453
 

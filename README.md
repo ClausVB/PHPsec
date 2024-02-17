@@ -33,4 +33,4 @@ Work in progress ...
 | Date | State | Comment                                     |
 |------------|-------|---------------------------------------|
 | 2024-02-10 | Alpha | README.MD and file to test this class |
-| 2024-02-xy | Alpha | Work in progress ...                  |
+| 2024-02-17 | Beta  | New examples, improved class "PHPsec" |

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <title>PHPsec: Getting started</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <style>
+      body
+      {
+         font-family: Arial;
+      }
+
+      h2
+      {
+         margin-top: 40px;
+      }
+
+      .source
+      {
+         border-left: 5px solid grey;
+         margin-left: 20px;
+         padding: 10px;
+         font-size: 1.2em;
+         line-height: 1.2em;
+         white-space: pre;
+      }
+
+      .span_pre
+      {
+         font-family: Courier;
+      }
+   </style>
+</head>
+
+<body>
+
+<header>
+   <h1>PHPsec: Getting started</h1>
+</header>
+
+<main>
+
+<p>If you want to know more about PHPsec:</p>
+<ul>
+   <li><a href="https://github.com/ClausVB/PHPsec" target="_blank">github.com: PHPsec</a></li>
+   <li><a href="#" target="_blank">Help: Work in progress ...</a></li>
+</ul>
+
+<p>Since we are talking about security, you have to read the <strong>whole page</strong>. But all code examples should work right out of the box.</p>
+
+<p>If you don't know how $_GET or $_POST works please read: <a href="https://www.php.net/manual/de/language.variables.superglobals.php" target="_blank">SuperGlobals</a>. To have an almost perfect knowledge about these variables and their usage is strongly recommended. Important note: $GLOBALS will be deleted/unset by PHPsec.</p>
+
+
+<h2>Prerequisites</h2>
+
+<p>I know you want to get started, so I will keep this short:</p>
+<ul>
+   <li>PHPsec is for small projects with any kind of <a href="https://www.w3schools.com/html/html_forms.asp" target="_blank">form</a> like contact or comments.</li>
+   <li>If you use a PHP framework like <a href="https://laravel.com/" target="_blank">Laravel</a> you should use internal security methods.</li>
+</ul>
+
+<p>Your knowledge is ...</p>
+<ul>
+   <li>Expert level: <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">RegEx</a></li>
+   <li>Basic level: PHP function "<a href="https://www.php.net/manual/de/function.preg-match.php" target="_blank">preg_match()</a>". The param "matches" is important for PHPsec.</li>
+   <li>Expert level: <a href="https://www.php.net/manual/de/language.variables.superglobals.php" target="_blank">SuperGlobals</a> especially $GLOBALS</li>
+</ul>
+
+
+<h2>Step #1a: $_GET</h2>
+
+<ul>
+   <li>URL: <span class="span_pre">test.php?test=1&amp;name=Daniel&amp;age=99&amp;some_evil_attack=BAD</span></li>
+   <li>Your application needs 3 params to run: test, name, age</li>
+   <li>Therefore everything else must be deleted, except our $superglobal_names: test, name, age</li>
+</ul>
+
+<div class="source"><code>require_once dirname(__FILE__) . '/phpsec/phpsec.php';
+$superglobal_names = array('test', 'name', 'age');
+$phpsec = new phpSec('get', $superglobal_names);</code></div>
+
+<p>Since we want to deal with $_GET, we create an object ($phpsec) with 'get'. When you create $phpsec the param "<span class="span_pre">some_evil_attack</span>" will be gone. In fact: PHPsec will delete/unset all SuperGlobals.</p>
+
+
+<h2>Step #1b: $_POST</h2>
+
+<ul>
+   <li>You have a <a href="https://www.w3schools.com/html/html_forms.asp" target="_blank">form</a> which provides 2 params: name, age</li>
+   <li>You create your object using 'post' instead of 'get'. The rest stays the same.</li>
+   <li>If I have complex array structures I like using additional variables. But if you have only a few variables, you might want to skip the array <span class="span_pre">$superglobal_names</span> like this:</li>
+</ul>
+
+<div class="source"><code>require_once dirname(__FILE__) . '/phpsec/phpsec.php';
+$phpsec = new phpSec('post', array('name', 'age'));</code></div>
+
+
+<h2>WARNING: Do not use "getRaw" without additional security measures!</h2>
+
+<p>Creating the object "$phpsec" will delete $_GET (and all SuperGlobals), but you can access "age" using <span class="span_pre">$phpsec->getRaw['age']</span> or other methods.</p>
+
+<p>Do not use "getRaw" without additional security measures!</p>
+
+<p>We will use "getRaw" and we will add security using RegEx.</p>
+
+<p>Let's take a look at two arrays:</p>
+
+<div class="source"><code>$_GET: Array
+(
+    [test] => 1
+    [name] => Daniel
+    [age] => 42
+    [some_evil_attack] => php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.UTF8.UTF7
+)
+
+GETRAW: array(3) {
+  ["test"]=>
+  string(1) "1"
+  ["name"]=>
+  string(6) "Daniel"
+  ["age"]=>
+  string(2) "42"
+}</code></div>
+
+<p>The param "<span class="span_pre">some_evil_attack</span>" is gone - powered by PHPsec. &#128526;</p>
+
+<p>Let's assume, we want to use "name" in a MySQL query. It might still be <a href="https://www.w3schools.com/sql/sql_injection.asp" target="_blank">injected</a>.</p>
+
+<p>Another example:</p>
+
+<div class="source"><code>$_GET: Array
+(
+    [filename] => /etc/passwd
+)
+
+GETRAW: array(1) {
+  ["filename"]=>
+  string(11) "/etc/passwd"
+}</code></div>
+
+<p>It doesn't matter if use "<span class="span_pre">include $_GET['filename']</span>" or "<span class="span_pre">include $phpsec->getRaw['filename']</span>". Both ways are neither safe nor secure.</p>
+
+
+<h2>Step #2: Use RegEx for security</h2>
+
+<p>To be secure, you have to run a tight ship. Which means you have to come up with good <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">RegEx</a> yourself.</p>
+
+<ul>
+   <li>Let's just look at "age" of your staff.</li>
+   <li>In Germany your oldest employee might be 67, in France it might be less.</li>
+   <li>For some reason your company excepts only trainees with a certain degree and a certain age like 18. Therefore your range is 18 to 67 in Germany. In France (at a hotel) it might be 16 to 62.</li>
+   <li>The RegEx depends on your project.</li>
+</ul>
+
+<p>Personal note: I wrote a <a href="https://www.w3schools.com/html/html_forms.asp" target="_blank">form</a> (contact). Many websites offer such a service. 10 years there was almost no spam at all. Three hours after <a href="https://typo3.org/" target="_blank">Typo3</a> launched ... 5 to 15 spam mails a day. Why? Typo3 is a good CMS, but if you blindly install an extension without checking security ...</p>
+
+
+<h2>Step #3: Integer and RegEx</h2>
+
+<p>Param "age": To keep it simple we will allow 10 to 62. Why?</p>
+
+<ul>
+   <li>RegEx are powerful, but they also are complicated (sometimes). This RegEx would allow all ages between 1 and 200
+      <ul><li class="span_pre">preg_match('/^(0?[1-9]|[1-9][0-9]|[1][0-9][0-9]|200)$/', $input_line, $output_array);</li></ul>
+   </li>
+   <li>This RegEx would allow all ages between 10 and 100
+      <ul><li class="span_pre">preg_match('/^([1-9][0-9]|100)$/', $input_line, $output_array);</li></ul>
+   </li>
+   <li>This RegEx will allow all ages between 10 and 62
+      <ul><li class="span_pre">preg_match('/^([1-5][0-9]|60|61|62)$/', $input_line, $output_array);</li></ul>
+   </li>
+   <li>To use PHPsec you must have a decent understanding of "<a href="https://www.php.net/manual/de/function.preg-match.php" target="_blank">preg_match()</a>"</li>
+</ul>
+
+<p>I use <a href="https://www.phpliveregex.com" target="_blank">phpliveregex.com</a> to test RegEx.</p>
+
+
+<h2>Step #4: Ternary Operator in PHP</h2>
+
+<p>Since we want to do stuff with our variables a <a href="https://www.phptutorial.net/php-tutorial/php-ternary-operator/" target="_blank">Ternary Operator</a> will come in handy.</p>
+
+<div class="source"><code>$phpsec = new phpSec('get', array('age'));
+preg_match('/^([1-5][0-9]|60|61|62)$/', $phpsec->getRaw['age'], $regex_matches);
+$tested_age = ($regex_matches[0] == $phpsec->getRaw['age'])
+	? $phpsec->isInt($phpsec->getRaw['age'])
+	: exit('Param "age" must be between 10 and 62!');</code></div>
+
+<ul>
+   <li>We create a new object name "$phpsec": SuperGlobal <span class="span_pre">$_GET</span>, param "age"
+      <ul><li class="span_pre">$phpsec = new phpSec('get', array('age'));</li></ul>
+   </li>
+   <li>We apply our RegEx and store it in <span class="span_pre">$regex_matches</span>. If "age == x" the RegEx will fail. If "age == 99" the RegEx will fail. This is the first step to secure the param "age".
+      <ul><li class="span_pre">preg_match('/^([1-5][0-9]|60|61|62)$/', $phpsec->getRaw['age'], $regex_matches);</li></ul>
+   </li>
+   <li>If "age" is valid the array "<span class="span_pre">$regex_matches[0]</span>" contains "42" (example). This test means: Either "age" is valid or it was contaminated.
+      <ul><li class="span_pre">($regex_matches[0] == $phpsec->getRaw['age'])</li></ul>
+   </li>
+   <li>Our "preg_match" determined "age" is valid. But GET-params are strings and we expect an integer. For additional safety reasons, we test "age" with PHPsec (isInt). Afterwards the function "<span class="span_pre">var_dump($tested_age)</span>" would return "int(42)".
+      <ul><li class="span_pre">$phpsec->isInt($phpsec->getRaw['age'])</li></ul>
+   </li>
+   <li>If "age" is invalid, you might want to tell the user. Since you have a ton of options, how to handle errors (error_log, display on screen, monitoring software, etc) the decision is yours. We use the lazy option: "<a href="https://www.php.net/manual/de/function.exit.php" target="_blank">exit()</a>"
+      <ul><li class="span_pre">exit('Param "age" must be between 10 and 62!');</li></ul>
+   </li>
+</ul>
+
+<h2>Result</h2>
+
+<pre><a href="https://www.php.net/manual/de/language.variables.superglobals.php" target="_blank">SuperGlobals</a> $_GET: <?php print_r($phpsec->getRaw); ?></pre>
+
+<p>Our code:</p>
+
+<div class="source"><code>preg_match('/^([1-5][0-9]|60|61|62)$/', $phpsec->getRaw['age'], $regex_matches);
+$tested_age = ($regex_matches[0] == $phpsec->getRaw['age'])
+	? $phpsec->isInt($phpsec->getRaw['age'])
+	: exit('Param "age" must be between 10 and 62!');</code></div>
+
+<p>$tested_age = <?=$tested_age?></p>
+
+
+<h2>Antother short example</h2>
+
+<p>We expect names like: "Daniel, Michelle, Marc-Oliver or Jörg"</p>
+
+<ul>
+   <li>Since "Jörg" contains a &gt;German Umlaut&lt; we need "<a href="https://www.php.net/manual/en/function.htmlentities.php" target="_blank">htmlentities()</a>". But without a proper RegEx it might still be <a href="https://www.w3schools.com/sql/sql_injection.asp" target="_blank">injected</a>.
+      <ul><li class="span_pre">$name_htmlentities = htmlentities($phpsec->getRaw['name'], ENT_HTML5, 'UTF-8');</li></ul>
+   </li>
+   <li>Note: The following RegEx is not the safest way to do it, but it will do for this example. "\w" matches a "word" character (alphanumeric plus "_" underscore). "Jörg" is equal to "J&amp;ouml&semi;rg". Therfore we need "&" and ";". "Marc-Oliver" contains a "-" (minus) so we add this as well.
+      <ul><li class="span_pre">preg_match('/^([\w&;-]+)$/', $name_htmlentities, $regex_name_matches);</li></ul>
+   </li>
+</ul>
+
+<div class="source"><code>$name_htmlentities = htmlentities($phpsec->getRaw['name'], ENT_HTML5, 'UTF-8');
+preg_match('/^([\w&;-]+)$/', $name_htmlentities, $regex_name_matches);
+$tested_name = ($regex_name_matches[0] == $name_htmlentities)
+   ? $name_htmlentities
+   : exit('Param "name" contains illegal characters!');</code></div>
+
+<p>$tested_name = <?=$tested_name?></p>
+
+
+<h2>Aftermath</h2>
+
+<p>You might encounter problems in large code segments.</p>
+
+<h3 style="color: red;">Incorrect</h3>
+
+<div class="source"><code>$we_need_this_variable_everywhere = 99;
+$phpsec = new phpSec('get', array('age'));
+<span style="color: orange;">// DELETED: $we_need_this_variable_everywhere</span></code></div>
+
+<h3 style="color: green;">Correct</h3>
+
+<div class="source"><code>define('WE_NEED_THIS_EVERYWHERE', 99);
+$phpsec = new phpSec('get', array('age'));
+<span style="color: orange;">// Constant "WE_NEED_THIS_EVERYWHERE" is available in all functions and all methods</span></code></div>
+
+<div class="source"><code>$phpsec = new phpSec('get', array('age'));
+$we_need_this_variable_everywhere = 99;
+<span style="color: orange;">// This is still bad practice but it should work</span>.</code></div>
+
+<p>Further information: <a href="https://stackoverflow.com/questions/12445972/stop-using-global-in-php" target="_blank">stackoverflow: Stop using 'global' in PHP</a></p>
+
+</main>
+
+<footer>
+   <p>&copy; 2024 - Powered by CVB. All rights reserved.</p>
+   <ul>
+      <li>https://remram44.github.io/regex-cheatsheet/regex.html</li>
+      <li>https://regexr.com</li>
+      <li>https://regex101.com https://www.phpliveregex.com</li>
+   </ul>
+
+</footer>
+
+</body>
+</html>

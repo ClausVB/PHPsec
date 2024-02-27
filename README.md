@@ -24,6 +24,14 @@ Source: https://github.com/php/php-src/issues/10453
 
 Your Apache (webserver) and PHP.INI should limit such requests depending on your project. A brain is needed.
 
+PHPsec is for small projects with any kind of <a href="https://www.w3schools.com/html/html_forms.asp" target="_blank">form</a> like contact or comments. If you use a PHP framework like [Laravel](https://laravel.com) you should use internal security methods.
+
+Your knowledge is ...
+* Expert level: <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">RegEx</a>
+* Basic level: PHP function "<a href="https://www.php.net/manual/de/function.preg-match.php" target="_blank">preg_match()</a>". The param "matches" is important for PHPsec.
+* Expert level: <a href="https://www.php.net/manual/de/language.variables.superglobals.php" target="_blank">SuperGlobals</a> especially $GLOBALS
+
+
 ## Installation
 
 Work in progress ...

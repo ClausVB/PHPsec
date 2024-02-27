@@ -1,6 +1,10 @@
 <?php
 
-
+/**
+ * The class "PHPsec" creates an API between your script and the outside world.
+ * It deletes all values/SuperGlobals like $_GET, $_POST and so on.
+ * https://www.php.net/manual/de/language.variables.superglobals.php
+**/
 
 if (!empty($_GET) and is_array($_GET))
 {
@@ -17,17 +21,17 @@ else
 
 require_once dirname(__FILE__) . '/phpsec.php';
 
-/**
- * The class "PHPsec" creates an API between your script and the outside world.
- * It deletes all values/SuperGlobals like $_GET, $_POST and so on.
- * https://www.php.net/manual/de/language.variables.superglobals.php
-**/
+// Create object containing $_GET (keys and values)
 $superglobal_names = array('test', 'name', 'age');
 $phpsec = new phpSec('get', $superglobal_names);
 
+/**
+ * A short example: How to handle a number
+ * Age: 10, 27, 42, 62
+**/
 preg_match('/^([1-5][0-9]|60|61|62)$/', $phpsec->getRaw['age'], $regex_matches);
 $tested_age = ($regex_matches[0] == $phpsec->getRaw['age'])
-	? $phpsec->isInt($phpsec->getRaw['age'])
+	? $phpsec->getInt('age')
 	: exit('Param "age" must be between 10 and 62!');
 
 
@@ -40,7 +44,7 @@ $name_htmlentities = htmlentities($phpsec->getRaw['name'], ENT_HTML5, 'UTF-8');
 preg_match('/^([\w&;-]+)$/', $name_htmlentities, $regex_name_matches);
 $tested_name = ($regex_name_matches[0] == $name_htmlentities)
 	? $name_htmlentities
-	: exit('Param "name" contains illegal characters!');
+	: $phpsec->getAlphanumericalAndSpace('name'); // returns all chars matching "[:alnum:]" and "[:space:]"
 
 //echo '<pre>GETRAW: '; var_dump($phpsec->getRaw); echo '</pre>';
 

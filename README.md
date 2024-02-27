@@ -36,6 +36,14 @@ Your knowledge is ...
 
 Work in progress ...
 
+Quick and dirty:
+* Create a sub directory "phpsec"
+* Download https://github.com/ClausVB/PHPsec/blob/main/phpsec.php
+* (YOUR_PROJECT)/phpsec/phpsec.php
+* Use "require_once" (or "include")
+* Take a look at the docs/examples
+* Done
+
 ## Project's status and releases
 
 | Date | State | Comment                                     |

@@ -6,10 +6,19 @@ define('PHPSEC_DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('PHPSEC_REMOTE_ADDRESS', $_SERVER['REMOTE_ADDR']);
 define('PHPSEC_PHP_SELF', $_SERVER['PHP_SELF']);
 
+/** 
+ * $_SERVER['PHP_AUTH_USER'] contains user information (e.g. HTACCESS)
+ * If not set = FALSE
+*/
+$logged_in_user = (isset($_SERVER['PHP_AUTH_USER'])) ? $_SERVER['PHP_AUTH_USER'] : false;
+define('PHPSEC_AUTH_USER', $logged_in_user);
+
+
 /**
  * PHPsec is a simple security class for PHP8.1 or later
  *
- * @author clausvb.lamp@mailgw.com
+ * @author CVB <clausvb.lamp@mailgw.com>
+ * @changed 2024-04-04
 **/
 
 class phpSec

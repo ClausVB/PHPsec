@@ -9,16 +9,18 @@ define('PHPSEC_PHP_SELF', $_SERVER['PHP_SELF']);
 /** 
  * $_SERVER['PHP_AUTH_USER'] contains user information (e.g. HTACCESS)
  * If not set = FALSE
+ * New in PHP 7.x "Null Coalescing Operator" which means: 
+ * $logged_in_user = (isset($_SERVER['PHP_AUTH_USER'])) ? $_SERVER['PHP_AUTH_USER'] : false;
+ * https://www.tutorialspoint.com/php7/php7_coalescing_operator.htm
 */
-$logged_in_user = (isset($_SERVER['PHP_AUTH_USER'])) ? $_SERVER['PHP_AUTH_USER'] : false;
-define('PHPSEC_AUTH_USER', $logged_in_user);
+define('PHPSEC_AUTH_USER', $_SERVER['PHP_AUTH_USER'] ?? false);
 
 
 /**
  * PHPsec is a simple security class for PHP8.1 or later
  *
  * @author CVB <clausvb.lamp@mailgw.com>
- * @changed 2024-04-04
+ * @changed 2024-04-19
 **/
 
 class phpSec

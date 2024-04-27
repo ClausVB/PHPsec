@@ -30,7 +30,7 @@ Your knowledge is ...
 * Expert level: <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">RegEx</a>
 * Basic level: PHP function "<a href="https://www.php.net/manual/en/function.preg-match.php" target="_blank">preg_match()</a>". The param "matches" is important for PHPsec.
 * Expert level: <a href="https://www.php.net/manual/de/language.variables.superglobals.php" target="_blank">SuperGlobals</a> especially $GLOBALS
-* Basic level: PHP function "<a href="https://www.php.net/manual/en/function.isset.php" target="_blank">isset()</a>" and  "<a href="https://www.php.net/manual/en/function.empty.php" target="_blank">empty()</a>" because PHPsec will force in you to test variables before using them. Otherwise you might encounter some errors, like "Fatal error: Uncaught Error: Typed property phpSec::$getRaw must not be accessed before initialization ..."
+* Basic level: PHP function "<a href="https://www.php.net/manual/en/function.isset.php" target="_blank">isset()</a>" and  "<a href="https://www.php.net/manual/en/function.empty.php" target="_blank">empty()</a>" because PHPsec will force you to test variables before using them. Otherwise you might encounter some errors, like "Fatal error: Uncaught Error: Typed property phpSec::$getRaw must not be accessed before initialization ..."
 
 
 ## Installation

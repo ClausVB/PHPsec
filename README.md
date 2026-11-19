@@ -50,3 +50,4 @@ Your knowledge is ...
 | 2024-02-17 | Beta  | New examples, improved class "PHPsec" |
 | 2024-02-27 | RC1   | New examples, improved internal docs  |
 | 2024-04-19 | RC2   | New constants regarding SuperGlobals  |
+| 2026-11-19 | RC2   | Minor tweaks                          |
